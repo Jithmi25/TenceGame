@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tense Bot</title>
+    <link rel="stylesheet" href="chatbot.css">
+</head>
+<body>
+    <div class="chatbot-container">
+        <header>
+            <h1>Tense Bot</h1>
+            <p id="onboarding-tip">Answer quickly to build streaks and earn milestone rewards.</p>
+            <div class="status-grid">
+                <p>Remaining: <span id="remaining-count">50</span></p>
+                <p>Time Left: <span id="time-left">30</span>s</p>
+                <p>Score: <span id="score">0</span></p>
+                <p>Streak: <span id="streak">0</span></p>
+                <p>Best Streak: <span id="best-streak">0</span></p>
+                <p>Difficulty: <span id="difficulty">1.00x</span></p>
+            </div>
+        </header>
+        <main>
+            <div class="chat-container">
+                <div id="chat-window" class="chat-window"></div>
+                <div class="input-container">
+                    <input type="text" id="user-answer" placeholder="Enter your answer here">
+                    <button id="submit-btn">Submit</button>
+                    <button id="hint-btn">Hint</button>
+                    <button id="next-btn">Next</button>
+                    <button id="restart-btn">Restart</button>
+                </div>
+            </div>
+            
+        </main>
+    </div>
+    <script src="chatbot.js"></script>
+</body>
+</html>
