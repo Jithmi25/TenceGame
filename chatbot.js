@@ -156,6 +156,10 @@ let currentQuestion = null;
 
 const state = {
     selectedCategory: localStorage.getItem("selectedLevel") || "beginner",
+    useAi: localStorage.getItem("useAiQuestions") === "true",
+    apiBaseUrl: localStorage.getItem("aiApiBaseUrl") || "https://api.openai.com/v1/chat/completions",
+    apiModel: localStorage.getItem("aiApiModel") || "gpt-4o-mini",
+    apiKey: localStorage.getItem("aiApiKey") || "",
 };
 
 const normalizeAnswer = (text) => {
@@ -173,6 +177,162 @@ const addMessage = (message, type = "bot-message") => {
 
 const addBotMessage = (message, type = "bot-message") => addMessage(message, type);
 const addUserMessage = (message) => addMessage(message, "user-message");
+
+const setApiStatus = (message) => {
+    const status = document.getElementById("api-status");
+    if (status) {
+        status.textContent = message;
+    }
+};
+
+const loadApiSettingsIntoUI = () => {
+    document.getElementById("use-ai").checked = state.useAi;
+    document.getElementById("api-base-url").value = state.apiBaseUrl;
+    document.getElementById("api-model").value = state.apiModel;
+    document.getElementById("api-key").value = state.apiKey;
+};
+
+const saveApiSettingsFromUI = () => {
+    state.useAi = document.getElementById("use-ai").checked;
+    state.apiBaseUrl = document.getElementById("api-base-url").value.trim();
+    state.apiModel = document.getElementById("api-model").value.trim();
+    state.apiKey = document.getElementById("api-key").value.trim();
+
+    localStorage.setItem("useAiQuestions", String(state.useAi));
+    localStorage.setItem("aiApiBaseUrl", state.apiBaseUrl);
+    localStorage.setItem("aiApiModel", state.apiModel);
+    localStorage.setItem("aiApiKey", state.apiKey);
+
+    if (!state.useAi) {
+        setApiStatus("AI mode is off. Using local questions.");
+        return;
+    }
+
+    if (!state.apiBaseUrl || !state.apiModel || !state.apiKey) {
+        setApiStatus("AI mode enabled, but API URL/model/key is incomplete. Falling back to local questions.");
+        return;
+    }
+
+    setApiStatus("AI mode enabled. New questions will be requested from your API.");
+};
+
+const setJsonOutput = (value) => {
+    const output = document.getElementById("json-output");
+    if (output) {
+        output.value = value;
+    }
+};
+
+const parseAiQuestionPayload = (payload) => {
+    const start = payload.indexOf("{");
+    const end = payload.lastIndexOf("}");
+    if (start < 0 || end <= start) {
+        throw new Error("No JSON object returned by AI model");
+    }
+
+    const parsed = JSON.parse(payload.slice(start, end + 1));
+    if (!parsed.sentence || !parsed.answer || !parsed.hint) {
+        throw new Error("Missing sentence/answer/hint in AI response");
+    }
+
+    return {
+        sentence: String(parsed.sentence),
+        answer: String(parsed.answer),
+        hint: String(parsed.hint),
+    };
+};
+
+const fetchAiQuestion = async (category) => {
+    if (!state.useAi) {
+        return null;
+    }
+
+    if (!state.apiBaseUrl || !state.apiModel || !state.apiKey) {
+        setApiStatus("AI settings incomplete. Using local question set.");
+        return null;
+    }
+
+    const systemPrompt = "You generate English tense practice questions for language learners. Return only valid JSON.";
+    const userPrompt = `Generate one ${category} tense question with exactly this JSON format: {"sentence":"...", "answer":"...", "hint":"..."}. Use a sentence with one blank represented as ___ and include only one best answer.`;
+
+    const response = await fetch(state.apiBaseUrl, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${state.apiKey}`,
+        },
+        body: JSON.stringify({
+            model: state.apiModel,
+            temperature: 0.8,
+            max_tokens: 180,
+            messages: [
+                { role: "system", content: systemPrompt },
+                { role: "user", content: userPrompt },
+            ],
+        }),
+    });
+
+    if (!response.ok) {
+        throw new Error(`API error ${response.status}`);
+    }
+
+    const data = await response.json();
+    const content = data?.choices?.[0]?.message?.content;
+    if (!content) {
+        throw new Error("No AI content returned");
+    }
+
+    const question = parseAiQuestionPayload(content);
+    setApiStatus("AI question loaded successfully.");
+    return question;
+};
+
+const generateQuestionJsonBatch = async () => {
+    const level = document.getElementById("helper-level").value;
+    const requestedCount = Number(document.getElementById("helper-count").value || 1);
+    const count = Math.max(1, Math.min(20, requestedCount));
+
+    if (!state.apiBaseUrl || !state.apiModel || !state.apiKey) {
+        setApiStatus("Add API URL, model, and key before generating JSON.");
+        setJsonOutput("[]");
+        return;
+    }
+
+    setApiStatus(`Generating ${count} ${level} question(s) with AI...`);
+    const generated = [];
+
+    for (let index = 0; index < count; index++) {
+        try {
+            const question = await fetchAiQuestion(level);
+            if (question) {
+                generated.push(question);
+            }
+        } catch (error) {
+            setApiStatus(`Generated ${generated.length}/${count}. Last error: ${error.message}`);
+        }
+    }
+
+    setJsonOutput(JSON.stringify(generated, null, 2));
+    localStorage.setItem("generatedQuestionDraft", JSON.stringify(generated));
+    setApiStatus(`JSON helper generated ${generated.length}/${count} question(s).`);
+};
+
+const copyGeneratedJson = async () => {
+    const output = document.getElementById("json-output");
+    const text = output ? output.value.trim() : "";
+
+    if (!text) {
+        setApiStatus("No generated JSON to copy yet.");
+        return;
+    }
+
+    try {
+        await navigator.clipboard.writeText(text);
+        setApiStatus("Generated JSON copied to clipboard.");
+    } catch (error) {
+        setApiStatus("Clipboard permission blocked. Copy the JSON manually from the box.");
+    }
+};
 
 const updateStatsUI = () => {
     document.getElementById("remaining-count").textContent = remainingQuestions;
@@ -260,7 +420,7 @@ const submitAnswer = () => {
     setTimeout(() => loadQuestion(state.selectedCategory), 500);
 };
 
-const loadQuestion = (category) => {
+const loadQuestion = async (category) => {
     try {
         if (remainingQuestions <= 0) {
             clearInterval(timer);
@@ -268,7 +428,12 @@ const loadQuestion = (category) => {
             return;
         }
 
-        currentQuestion = generateQuestion(category);
+        const aiQuestion = await fetchAiQuestion(category).catch((error) => {
+            setApiStatus(`AI unavailable (${error.message}). Using local questions.`);
+            return null;
+        });
+
+        currentQuestion = aiQuestion || generateQuestion(category);
         timeLeft = calculateTimeForNextQuestion();
         updateStatsUI();
         addBotMessage(`Complete the sentence: ${currentQuestion.sentence}`);
@@ -301,6 +466,17 @@ const initializeGame = () => {
         localStorage.setItem("hasPlayedTenseBot", "true");
     }
 
+    loadApiSettingsIntoUI();
+    saveApiSettingsFromUI();
+    setJsonOutput(localStorage.getItem("generatedQuestionDraft") || "[]");
+
+    document.getElementById("save-api-settings").addEventListener("click", saveApiSettingsFromUI);
+    document.getElementById("generate-json-btn").addEventListener("click", () => {
+        void generateQuestionJsonBatch();
+    });
+    document.getElementById("copy-json-btn").addEventListener("click", () => {
+        void copyGeneratedJson();
+    });
     document.getElementById("submit-btn").addEventListener("click", submitAnswer);
     document.getElementById("hint-btn").addEventListener("click", () => {
         if (currentQuestion) {
@@ -309,11 +485,12 @@ const initializeGame = () => {
     });
     document.getElementById("next-btn").addEventListener("click", () => {
         streak = 0;
+        clearInterval(timer);
         remainingQuestions--;
         questionsAnswered++;
         updateDifficulty();
         updateStatsUI();
-        loadQuestion(state.selectedCategory);
+        void loadQuestion(state.selectedCategory);
     });
     document.getElementById("restart-btn").addEventListener("click", restartGame);
     document.getElementById("user-answer").addEventListener("keydown", (event) => {
@@ -323,7 +500,7 @@ const initializeGame = () => {
     });
 
     updateStatsUI();
-    loadQuestion(state.selectedCategory);
+    void loadQuestion(state.selectedCategory);
 };
 
 window.addEventListener("load", initializeGame);

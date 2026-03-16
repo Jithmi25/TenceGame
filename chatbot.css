@@ -48,6 +48,92 @@ header h1 {
   font-size: 0.9rem;
 }
 
+.api-settings {
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+
+.api-toggle {
+  color: #dcdcdc;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#api-base-url,
+#api-model,
+#api-key {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #444;
+  border-radius: 5px;
+  background-color: #2c2c2c;
+  color: #f9f9f9;
+  outline: none;
+}
+
+#save-api-settings {
+  align-self: flex-start;
+}
+
+.api-status {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #bdbdbd;
+}
+
+.json-helper {
+  margin-bottom: 14px;
+  padding: 10px;
+  border: 1px solid #3d3d3d;
+  border-radius: 8px;
+  background: #242424;
+}
+
+.helper-title {
+  margin: 0 0 8px;
+  color: #e0e0e0;
+  font-size: 0.95rem;
+}
+
+.helper-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+#helper-level,
+#helper-count,
+#json-output {
+  border: 1px solid #444;
+  border-radius: 5px;
+  background-color: #2c2c2c;
+  color: #f9f9f9;
+  outline: none;
+}
+
+#helper-level,
+#helper-count {
+  padding: 8px;
+}
+
+#helper-count {
+  width: 90px;
+}
+
+#json-output {
+  width: 100%;
+  resize: vertical;
+  padding: 10px;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 0.85rem;
+}
+
 .chat-window {
   height: 360px;
   overflow-y: auto;

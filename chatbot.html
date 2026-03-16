@@ -19,6 +19,31 @@
                 <p>Best Streak: <span id="best-streak">0</span></p>
                 <p>Difficulty: <span id="difficulty">1.00x</span></p>
             </div>
+            <div class="api-settings">
+                <label class="api-toggle">
+                    <input type="checkbox" id="use-ai">
+                    Use AI API questions
+                </label>
+                <input type="text" id="api-base-url" placeholder="API URL (e.g. https://api.openai.com/v1/chat/completions)">
+                <input type="text" id="api-model" placeholder="Model (e.g. gpt-4o-mini)">
+                <input type="password" id="api-key" placeholder="API Key">
+                <button id="save-api-settings">Save API Settings</button>
+                <p id="api-status" class="api-status">AI mode is off. Using local questions.</p>
+            </div>
+            <div class="json-helper">
+                <p class="helper-title">JSON Question Helper</p>
+                <div class="helper-actions">
+                    <select id="helper-level" aria-label="Question level" title="Question level">
+                        <option value="beginner">Beginner</option>
+                        <option value="intermediate">Intermediate</option>
+                        <option value="advanced">Advanced</option>
+                    </select>
+                    <input type="number" id="helper-count" min="1" max="20" value="5" aria-label="Number of questions" title="Number of questions" placeholder="Count">
+                    <button id="generate-json-btn">Generate JSON</button>
+                    <button id="copy-json-btn">Copy JSON</button>
+                </div>
+                <textarea id="json-output" rows="8" readonly placeholder="AI-generated JSON questions will appear here..."></textarea>
+            </div>
         </header>
         <main>
             <div class="chat-container">
