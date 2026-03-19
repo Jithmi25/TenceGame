@@ -3,31 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tense Bot</title>
+    <title>Tense Bot - Master English Tenses</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Tense Bot</h1>
+            <div class="header-content">
+                <h1>🤖 Tense Bot</h1>
+                <p class="tagline">Master English Tenses with AI-Powered Learning</p>
+            </div>
         </header>
         <main>
-            <div class="intro">
-                <p>Welcome to the ultimate game for mastering English tenses! Choose your level and start your journey toward improving your grammar skills.</p>
+            <section class="hero">
+                <h2>Welcome to Your Grammar Journey!</h2>
+                <p>Learn English tenses through interactive conversations with our intelligent chatbot. Perfect your grammar skills while having fun!</p>
+                <div class="feature-highlights">
+                    <div class="feature-card">
+                        <span class="feature-icon">🎯</span>
+                        <h3>Smart Tutorials</h3>
+                        <p>Learn at your own pace with personalized guidance</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon">💬</span>
+                        <h3>Interactive Chat</h3>
+                        <p>Practice with an intelligent chatbot</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon">🏆</span>
+                        <h3>Track Progress</h3>
+                        <p>Monitor your improvement over time</p>
+                    </div>
+                </div>
                 <img src="img.jpg" alt="Grammar Game Image" class="banner-image">
-            </div>
-            <div class="level-selection">
-                <label for="level">Choose Your Level:</label>
-                <select id="level">
-                    <option value="beginner">Beginner</option>
-                    <option value="intermediate">Intermediate</option>
-                    <option value="advanced">Advanced</option>
-                </select>
-                <button id="start-game">Start Game</button>
-            </div>
+            </section>
+            
+            <section class="level-selection">
+                <h2>Choose Your Difficulty Level</h2>
+                <div class="level-container">
+                    <div class="level-option" data-level="beginner">
+                        <input type="radio" id="beginner" name="level" value="beginner" checked>
+                        <label for="beginner" class="level-label">
+                            <span class="level-title">Beginner</span>
+                            <span class="level-desc">Start with basic tenses like present simple and past simple</span>
+                        </label>
+                    </div>
+                    <div class="level-option" data-level="intermediate">
+                        <input type="radio" id="intermediate" name="level" value="intermediate">
+                        <label for="intermediate" class="level-label">
+                            <span class="level-title">Intermediate</span>
+                            <span class="level-desc">Master present perfect, continuous forms, and conditionals</span>
+                        </label>
+                    </div>
+                    <div class="level-option" data-level="advanced">
+                        <input type="radio" id="advanced" name="level" value="advanced">
+                        <label for="advanced" class="level-label">
+                            <span class="level-title">Advanced</span>
+                            <span class="level-desc">Challenge yourself with complex tenses and mixed scenarios</span>
+                        </label>
+                    </div>
+                </div>
+                <button id="start-game" class="btn-primary">Start Learning</button>
+            </section>
         </main>
+        
         <footer>
-            <p>&copy; 2024 Learn English Tenses. All rights reserved.</p>
+            <p>&copy; 2026 Tense Bot. Learn English Tenses with AI. All rights reserved.</p>
         </footer>
     </div>
     <script src="script.js"></script>
