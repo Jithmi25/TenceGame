@@ -186,17 +186,37 @@ const setApiStatus = (message) => {
 };
 
 const loadApiSettingsIntoUI = () => {
-    document.getElementById("use-ai").checked = state.useAi;
-    document.getElementById("api-base-url").value = state.apiBaseUrl;
-    document.getElementById("api-model").value = state.apiModel;
-    document.getElementById("api-key").value = state.apiKey;
+    const useAi = document.getElementById("use-ai");
+    const apiBaseUrl = document.getElementById("api-base-url");
+    const apiModel = document.getElementById("api-model");
+    const apiKey = document.getElementById("api-key");
+
+    if (!useAi || !apiBaseUrl || !apiModel || !apiKey) {
+        return;
+    }
+
+    useAi.checked = state.useAi;
+    apiBaseUrl.value = state.apiBaseUrl;
+    apiModel.value = state.apiModel;
+    apiKey.value = state.apiKey;
 };
 
 const saveApiSettingsFromUI = () => {
-    state.useAi = document.getElementById("use-ai").checked;
-    state.apiBaseUrl = document.getElementById("api-base-url").value.trim();
-    state.apiModel = document.getElementById("api-model").value.trim();
-    state.apiKey = document.getElementById("api-key").value.trim();
+    const useAi = document.getElementById("use-ai");
+    const apiBaseUrl = document.getElementById("api-base-url");
+    const apiModel = document.getElementById("api-model");
+    const apiKey = document.getElementById("api-key");
+
+    if (!useAi || !apiBaseUrl || !apiModel || !apiKey) {
+        state.useAi = false;
+        localStorage.setItem("useAiQuestions", "false");
+        return;
+    }
+
+    state.useAi = useAi.checked;
+    state.apiBaseUrl = apiBaseUrl.value.trim();
+    state.apiModel = apiModel.value.trim();
+    state.apiKey = apiKey.value.trim();
 
     localStorage.setItem("useAiQuestions", String(state.useAi));
     localStorage.setItem("aiApiBaseUrl", state.apiBaseUrl);
@@ -470,7 +490,10 @@ const initializeGame = () => {
     saveApiSettingsFromUI();
     setJsonOutput(localStorage.getItem("generatedQuestionDraft") || "[]");
 
-    document.getElementById("save-api-settings").addEventListener("click", saveApiSettingsFromUI);
+    const saveApiSettingsButton = document.getElementById("save-api-settings");
+    if (saveApiSettingsButton) {
+        saveApiSettingsButton.addEventListener("click", saveApiSettingsFromUI);
+    }
     document.getElementById("generate-json-btn").addEventListener("click", () => {
         void generateQuestionJsonBatch();
     });
