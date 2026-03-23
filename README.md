@@ -1,10 +1,10 @@
-# Tense Bot
+# Tense Bot 🤖
 
 Tense Bot is a browser-based English tense practice game.
 
 Users choose a level (`beginner`, `intermediate`, or `advanced`) and answer fill-in-the-blank grammar questions in a timed chat-style interface. The app tracks score, streaks, best streak, time pressure, and milestone rewards.
 
-## Features
+## Features 🛠️
 
 - Level selection from the home page
 - Chat-style quiz experience with:
@@ -18,7 +18,7 @@ Users choose a level (`beginner`, `intermediate`, or `advanced`) and answer fill
 - JSON Question Helper to generate and copy batches of AI questions
 - Progress persistence using `localStorage` (selected level, best streak, onboarding state, API settings, generated draft)
 
-## Project Structure
+## Project Structure 📝
 
 - `index.html` — landing page and level selection
 - `style.css` — styles for landing page
@@ -28,7 +28,7 @@ Users choose a level (`beginner`, `intermediate`, or `advanced`) and answer fill
 - `chatbot.js` — game logic, timer, scoring, AI integration, JSON helper
 - `img.jpg` — landing page banner image
 
-## How to Run
+## How to Run 👩🏻‍💻
 
 No build step or dependencies are required.
 
@@ -51,27 +51,15 @@ Then open:
 
 - `http://localhost:8000/index.html`
 
-## AI Mode Setup (Optional)
 
-On the chat page:
-
-1. Enable **Use AI API questions**.
-2. Fill in:
-   - API URL (default: OpenAI chat completions endpoint)
-   - Model (default: `gpt-4o-mini`)
-   - API Key
-3. Click **Save API Settings**.
-
-If AI settings are incomplete or the request fails, the app automatically falls back to local questions.
-
-## Gameplay Notes
+## Gameplay Notes 🗒️
 
 - Correct answers increase score based on difficulty and remaining time.
 - Difficulty multiplier increases as more questions are answered.
 - Every 10 answered questions shows a milestone message.
 - Session ends after 50 questions.
 
-## Browser Requirements
+## Browser Requirements 💻
 
 Modern browser with support for:
 
@@ -80,8 +68,3 @@ Modern browser with support for:
 - `async/await`
 - Clipboard API (for JSON copy button)
 
-## Future Improvements (Optional)
-
-- Add answer tolerance rules for equivalent tense forms
-- Add category analytics and end-of-session breakdown
-- Add import/export for custom question sets
